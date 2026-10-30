@@ -1,7 +1,7 @@
 # Maintainer: Sticky Notes contributors
 pkgname=gnome-sticky-notes
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc='Sticky notes and checklists with reminders for GNOME'
 arch=(any)
 url='https://github.com/sdeb/gnome-sticky-notes'
@@ -19,7 +19,7 @@ optdepends=('gnome-shell: pin notes when running as a native Wayland client')
 options=(!debug)
 install=gnome-sticky-notes.install
 source=("$pkgname-$pkgver.tar.gz")
-sha256sums=('5c6db6c122be6f548331ea44a92aa7fce9dfac2408b79870eb99187998f56e23')
+sha256sums=('0c4d04b82ac998eb2238ab3295f24e732553e5f69505acfb4ff7d26979cb772f')
 
 check() {
   cd "$pkgname-$pkgver"

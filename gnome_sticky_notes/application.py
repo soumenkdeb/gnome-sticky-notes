@@ -129,7 +129,7 @@ class StickyApp(Adw.Application):
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self._on_signal)
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, self._on_signal)
         GLib.timeout_add_seconds(15, self._check_reminders)
-        GLib.idle_add(self._check_reminders)
+        GLib.idle_add(self._first_reminder_check)
 
     def do_activate(self):
         self._ensure_started()
@@ -526,11 +526,15 @@ class StickyApp(Adw.Application):
             if window is not None:
                 window.refresh_reminder_labels()
             fired = True
-        for window in self.windows.values():
-            window.capture_geometry()
         if fired:
+            for window in self.windows.values():
+                window.capture_geometry()
             self.store.save()
         return True
+
+    def _first_reminder_check(self) -> bool:
+        self._check_reminders()
+        return GLib.SOURCE_REMOVE
 
     def _send_reminder(self, ident: str, kind: str, note: Note, item) -> None:
         title, body = reminder_copy(kind, note, item)

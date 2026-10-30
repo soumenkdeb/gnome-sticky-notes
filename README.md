@@ -8,7 +8,7 @@ From this directory:
 
 ```sh
 make package
-sudo pacman -U gnome-sticky-notes-1.0.0-1-any.pkg.tar.zst
+sudo pacman -U gnome-sticky-notes-1.0.0-2-any.pkg.tar.zst
 ```
 
 `make package` builds a normal pacman package. It installs the command to `/usr/bin/gnome-sticky-notes`, a desktop entry, the icon, an AppStream metainfo file, and the optional Wayland pin extension. Pacman updates the icon and desktop caches.
