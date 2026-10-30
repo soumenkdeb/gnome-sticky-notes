@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gnome-sticky-notes"
+version = "1.0.0"
+description = "Sticky notes for the GNOME desktop"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+
+[project.scripts]
+gnome-sticky-notes = "gnome_sticky_notes.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["gnome_sticky_notes*"]
+
+[tool.setuptools.package-data]
+gnome_sticky_notes = ["style.css"]

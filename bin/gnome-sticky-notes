@@ -1,0 +1,12 @@
+#!/bin/sh
+# Source checkout: import the repo. System install: use the site-packages module.
+HERE=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+ROOT=$(CDPATH= cd -- "$HERE/.." && pwd)
+if [ -f "$ROOT/gnome_sticky_notes/__main__.py" ]; then
+    cd "$ROOT" || exit 1
+    export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+fi
+if [ "${STICKY_NOTES_BACKEND:-x11}" != "wayland" ] && [ -z "${GDK_BACKEND:-}" ]; then
+    export GDK_BACKEND=x11
+fi
+exec python3 -m gnome_sticky_notes "$@"

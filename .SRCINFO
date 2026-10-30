@@ -1,0 +1,21 @@
+pkgbase = gnome-sticky-notes
+	pkgdesc = Sticky notes and checklists with reminders for GNOME
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/sdeb/gnome-sticky-notes
+	install = gnome-sticky-notes.install
+	arch = any
+	license = MIT
+	makedepends = desktop-file-utils
+	depends = python
+	depends = python-gobject
+	depends = gtk4
+	depends = libadwaita
+	depends = libx11
+	depends = hicolor-icon-theme
+	optdepends = gnome-shell: pin notes when running as a native Wayland client
+	options = !debug
+	source = gnome-sticky-notes-1.0.0.tar.gz
+	sha256sums = 5c6db6c122be6f548331ea44a92aa7fce9dfac2408b79870eb99187998f56e23
+
+pkgname = gnome-sticky-notes

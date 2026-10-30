@@ -1,0 +1,8 @@
+{
+  "uuid": "sticky-notes-pin@sdeb.app",
+  "name": "Sticky Notes Pin",
+  "description": "Keeps pinned Sticky Notes above other windows when the app runs as a native Wayland client. The default launcher uses XWayland and does not need this extension.",
+  "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
+  "version": 1,
+  "url": "https://github.com/sdeb/gnome-sticky-notes"
+}

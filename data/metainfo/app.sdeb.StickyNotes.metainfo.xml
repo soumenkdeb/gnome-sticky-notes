@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.sdeb.StickyNotes</id>
+  <name>Sticky Notes</name>
+  <summary>Pin notes, write text, and keep checklists with reminders</summary>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="app.sdeb">
+    <name>Sticky Notes contributors</name>
+  </developer>
+  <url type="homepage">https://github.com/sdeb/gnome-sticky-notes</url>
+  <description>
+    <p>Each note is its own window on the GNOME desktop. Write text, turn a note into a checklist, set a reminder, and pin a note above other windows.</p>
+  </description>
+  <launchable type="desktop-id">app.sdeb.StickyNotes.desktop</launchable>
+  <provides>
+    <binary>gnome-sticky-notes</binary>
+  </provides>
+  <releases>
+    <release version="1.0.0" date="2026-10-30"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>

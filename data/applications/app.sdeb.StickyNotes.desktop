@@ -1,0 +1,25 @@
+[Desktop Entry]
+Name=Sticky Notes
+GenericName=Sticky Notes
+Comment=Pin notes, write text, and keep checklists with reminders
+Exec=/usr/bin/gnome-sticky-notes
+Icon=app.sdeb.StickyNotes
+Terminal=false
+Type=Application
+Categories=Utility;GTK;GNOME;
+Keywords=sticky;notes;todo;checklist;reminder;
+StartupWMClass=gnome-sticky-notes
+StartupNotify=true
+Actions=new-note;new-todo;from-clipboard;
+
+[Desktop Action new-note]
+Name=New Note
+Exec=/usr/bin/gnome-sticky-notes --new
+
+[Desktop Action new-todo]
+Name=New Checklist
+Exec=/usr/bin/gnome-sticky-notes --new-todo
+
+[Desktop Action from-clipboard]
+Name=New Note from Clipboard
+Exec=/usr/bin/gnome-sticky-notes --from-clipboard

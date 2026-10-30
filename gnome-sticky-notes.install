@@ -1,0 +1,16 @@
+post_install() {
+  cat <<EOF
+Sticky Notes is installed.
+Launch it from the overview, or run gnome-sticky-notes.
+
+The default command uses XWayland so notes can stay above other windows.
+An optional GNOME Shell extension is included for a native Wayland run.
+Enable it after you log out and back in:
+
+  gnome-extensions enable sticky-notes-pin@sdeb.app
+EOF
+}
+
+post_upgrade() {
+  post_install
+}
