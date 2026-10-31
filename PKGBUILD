@@ -19,7 +19,7 @@ optdepends=('gnome-shell: pin notes when running as a native Wayland client')
 options=(!debug)
 install=gnome-sticky-notes.install
 source=("$pkgname-$pkgver.tar.gz")
-sha256sums=('0c4d04b82ac998eb2238ab3295f24e732553e5f69505acfb4ff7d26979cb772f')
+sha256sums=('1b25f4fe2c1eeac800ef006597b8d329073cab858030291541940b16ba2f1057')
 
 check() {
   cd "$pkgname-$pkgver"

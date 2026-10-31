@@ -10,7 +10,8 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango
+import cairo
+from gi.repository import Adw, Gdk, Gio, GLib, Graphene, Gtk, Pango
 
 from . import pinning
 from .model import COLORS, Span, TodoItem, merge_spans, parse_checklist, spans_plain, window_title
@@ -18,6 +19,79 @@ from .theme import appearance_menu as _appearance_menu
 from .reminders import format_when, is_past, stamp
 
 _TYPING = ("bold", "italic", "underline", "strike")
+_SELECTION_MARKS = ("insert", "selection_bound")
+
+
+def color_chip(name: str, size: int) -> Gtk.Box:
+    """A round color sample that is not itself a button.
+
+    Header-bar buttons are forced transparent. A chip painted as a plain
+    box keeps its color inside that button and inside the palette popover.
+    """
+    chip = Gtk.Box()
+    chip.add_css_class("palette-swatch")
+    chip.add_css_class(f"swatch-{name}")
+    chip.set_size_request(size, size)
+    chip.set_can_target(False)
+    return chip
+
+
+class PaletteCheck(Gtk.Widget):
+    """Rounded check drawn over the selected color."""
+
+    __gtype_name__ = "PaletteCheck"
+
+    def __init__(self):
+        super().__init__()
+        self.add_css_class("palette-check")
+        self.set_can_target(False)
+
+    def do_snapshot(self, snapshot):
+        width = self.get_width()
+        height = self.get_height()
+        if width < 2 or height < 2:
+            return
+        color = self.get_color()
+        if color.alpha <= 0:
+            return
+        rect = Graphene.Rect()
+        rect.init(0, 0, width, height)
+        context = snapshot.append_cairo(rect)
+        context.set_source_rgba(color.red, color.green, color.blue, color.alpha)
+        context.set_line_width(max(2.0, width * 0.11))
+        context.set_line_cap(cairo.LINE_CAP_ROUND)
+        context.set_line_join(cairo.LINE_JOIN_ROUND)
+        # Short arm, long arm, sitting a little below center.
+        context.move_to(width * 0.28, height * 0.52)
+        context.line_to(width * 0.43, height * 0.68)
+        context.line_to(width * 0.74, height * 0.33)
+        context.stroke()
+
+
+def color_choice(name: str) -> Gtk.Button:
+    button = Gtk.Button(tooltip_text=name.capitalize())
+    button.add_css_class("color-choice")
+    if name == "charcoal":
+        button.add_css_class("check-light")
+    overlay = Gtk.Overlay()
+    overlay.set_child(color_chip(name, 22))
+    overlay.add_overlay(PaletteCheck())
+    button.set_child(overlay)
+    return button
+
+
+def selection_bounds(buf: Gtk.TextBuffer) -> tuple | None:
+    """Return ``(start, end)`` when the buffer has a real selection.
+
+    PyGObject turns a failed ``get_selection_bounds`` into ``()``. During
+    ``mark-set``, ``get_has_selection()`` can still be true while that
+    tuple is empty: ``place_cursor`` moves the insert mark before GTK
+    clears the selection flag. Unpacking the empty tuple crashes.
+    """
+    bounds = buf.get_selection_bounds()
+    if not bounds or len(bounds) != 2:
+        return None
+    return bounds
 
 
 def buffer_to_spans(buf: Gtk.TextBuffer, tags: dict) -> list[Span]:
@@ -263,6 +337,8 @@ class NoteWindow(Gtk.ApplicationWindow):
         header.set_title_widget(Gtk.Box())
         self.color_btn = Gtk.Button(tooltip_text="Note color")
         self.color_btn.add_css_class("color-dot")
+        self.color_swatch = color_chip(note.color, 16)
+        self.color_btn.set_child(self.color_swatch)
         self.color_popover = self._build_color_popover()
         self.color_popover.set_parent(self.color_btn)
         self.color_btn.connect("clicked", lambda *_: self.color_popover.popup())
@@ -385,16 +461,17 @@ class NoteWindow(Gtk.ApplicationWindow):
 
     def _build_color_popover(self) -> Gtk.Popover:
         popover = Gtk.Popover()
-        grid = Gtk.Grid(column_spacing=8, row_spacing=8)
+        popover.add_css_class("color-palette")
+        grid = Gtk.Grid(column_spacing=6, row_spacing=6)
         grid.set_margin_top(10)
         grid.set_margin_bottom(10)
         grid.set_margin_start(10)
         grid.set_margin_end(10)
+        self._palette_buttons = {}
         for index, name in enumerate(COLORS):
-            button = Gtk.Button(tooltip_text=name.capitalize())
-            button.add_css_class("color-choice")
-            button.add_css_class(f"dot-{name}")
+            button = color_choice(name)
             button.connect("clicked", self._choose_color, name)
+            self._palette_buttons[name] = button
             grid.attach(button, index % 4, index // 4, 1, 1)
         popover.set_child(grid)
         return popover
@@ -618,13 +695,16 @@ class NoteWindow(Gtk.ApplicationWindow):
         self.placeholder.set_visible(empty and self.note.kind == "text")
 
     def _on_mark(self, _buf, _location, mark) -> None:
-        if mark != self.buffer.get_insert():
+        # Shift+arrows move only selection_bound. place_cursor moves insert
+        # while the selection flag is still stale.
+        if mark.get_name() not in _SELECTION_MARKS:
             return
         self._sync_format_buttons()
 
     def _sync_format_buttons(self) -> None:
-        if self.buffer.get_has_selection():
-            start, _end = self.buffer.get_selection_bounds()
+        bounds = selection_bounds(self.buffer)
+        if bounds is not None:
+            start, _end = bounds
             tags = set(start.get_tags())
         else:
             tags = set(self.buffer.get_iter_at_mark(self.buffer.get_insert()).get_tags())
@@ -640,17 +720,20 @@ class NoteWindow(Gtk.ApplicationWindow):
             return
         active = button.get_active()
         self.typing[name] = active
-        if self.buffer.get_has_selection():
-            start, end = self.buffer.get_selection_bounds()
-            if active:
-                self.buffer.apply_tag(self.tags[name], start, end)
-            else:
-                self.buffer.remove_tag(self.tags[name], start, end)
+        bounds = selection_bounds(self.buffer)
+        if bounds is None:
+            return
+        start, end = bounds
+        if active:
+            self.buffer.apply_tag(self.tags[name], start, end)
+        else:
+            self.buffer.remove_tag(self.tags[name], start, end)
 
     def _toggle_bullets(self, *_args) -> None:
         buf = self.buffer
-        if buf.get_has_selection():
-            start, end = buf.get_selection_bounds()
+        bounds = selection_bounds(buf)
+        if bounds is not None:
+            start, end = bounds
         else:
             start = buf.get_iter_at_mark(buf.get_insert())
             start.set_line_offset(0)
@@ -689,9 +772,14 @@ class NoteWindow(Gtk.ApplicationWindow):
 
     def _apply_color(self) -> None:
         for name in COLORS:
-            self.color_btn.remove_css_class(f"dot-{name}")
-        self.color_btn.add_css_class(f"dot-{self.note.color}")
-        # Keep the readable foreground explicit for themes that ignore the window color.
+            self.color_swatch.remove_css_class(f"swatch-{name}")
+            button = self._palette_buttons.get(name)
+            if button is not None:
+                if name == self.note.color:
+                    button.add_css_class("palette-current")
+                else:
+                    button.remove_css_class("palette-current")
+        self.color_swatch.add_css_class(f"swatch-{self.note.color}")
         self.color_btn.set_tooltip_text(f"Color: {self.note.color}")
 
     def sync_pin(self) -> None:

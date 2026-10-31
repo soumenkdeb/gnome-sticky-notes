@@ -32,37 +32,15 @@ window.sticky-note list row button.row-tool {
 }
 
 window.sticky-note headerbar button.color-dot {
-  min-width: 22px;
-  min-height: 22px;
-  padding: 0;
-  margin: 4px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 4px;
+  margin: 2px;
   border-radius: 999px;
-  border: 2px solid rgba(0, 0, 0, 0.45);
-  background-image: none;
+  background: transparent;
+  background-color: transparent;
+  border: none;
 }
-
-window.sticky-note.scheme-light headerbar button.color-dot.dot-yellow { background: #fff3a3; }
-window.sticky-note.scheme-light headerbar button.color-dot.dot-green { background: #d4f5c4; }
-window.sticky-note.scheme-light headerbar button.color-dot.dot-pink { background: #ffd3e4; }
-window.sticky-note.scheme-light headerbar button.color-dot.dot-purple { background: #e3d4ff; }
-window.sticky-note.scheme-light headerbar button.color-dot.dot-blue { background: #d2eaff; }
-window.sticky-note.scheme-light headerbar button.color-dot.dot-gray { background: #eceff1; }
-window.sticky-note.scheme-light headerbar button.color-dot.dot-charcoal {
-  background: #3a3a3a;
-  border-color: rgba(255, 255, 255, 0.75);
-}
-
-window.sticky-note.scheme-dark headerbar button.color-dot {
-  border-color: rgba(255, 255, 255, 0.55);
-}
-
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-yellow { background: #4a3f16; }
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-green { background: #1e3d24; }
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-pink { background: #4c2436; }
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-purple { background: #34264c; }
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-blue { background: #173448; }
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-gray { background: #2c3134; }
-window.sticky-note.scheme-dark headerbar button.color-dot.dot-charcoal { background: #161616; }
 
 window.sticky-note.scheme-light headerbar button:hover,
 window.sticky-note.scheme-light .note-footer button:hover,
@@ -240,45 +218,70 @@ window.sticky-note.scheme-dark.note-charcoal headerbar,
 window.sticky-note.scheme-dark.note-charcoal headerbar button,
 window.sticky-note.scheme-dark.note-charcoal headerbar image { color: #f5f5f5; }
 
-button.color-dot,
-button.color-choice {
-  padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.25);
+popover.color-palette button.color-choice,
+window.sticky-note headerbar button.color-choice {
+  background: transparent;
+  background-color: transparent;
+  border: none;
   box-shadow: none;
-  min-width: 16px;
-  min-height: 16px;
-  margin: 8px 4px;
-}
-
-button.color-choice {
+  padding: 3px;
   min-width: 28px;
   min-height: 28px;
   margin: 0;
+  border-radius: 999px;
 }
 
-.dot-yellow, .swatch-yellow { background-color: #fff3a3; }
-.dot-green, .swatch-green { background-color: #d4f5c4; }
-.dot-pink, .swatch-pink { background-color: #ffd3e4; }
-.dot-purple, .swatch-purple { background-color: #e3d4ff; }
-.dot-blue, .swatch-blue { background-color: #d2eaff; }
-.dot-gray, .swatch-gray { background-color: #eceff1; }
-.dot-charcoal, .swatch-charcoal { background-color: #3a3a3a; }
+.palette-check {
+  color: #2b2418;
+  opacity: 0;
+}
 
-window.sticky-note.scheme-dark button.dot-yellow,
+button.color-choice.palette-current .palette-check {
+  opacity: 1;
+}
+
+button.color-choice.check-light .palette-check,
+window.sticky-note.scheme-dark .palette-check {
+  color: #f6f3ea;
+}
+
+.palette-swatch {
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.45);
+  background-image: none;
+}
+
+/* Light ring outside, dark ring inside, so the chip shows on any note color. */
+window.sticky-note headerbar button.color-dot .palette-swatch {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.swatch-yellow { background-color: #fff3a3; }
+.swatch-green { background-color: #d4f5c4; }
+.swatch-pink { background-color: #ffd3e4; }
+.swatch-purple { background-color: #e3d4ff; }
+.swatch-blue { background-color: #d2eaff; }
+.swatch-gray { background-color: #eceff1; }
+.swatch-charcoal { background-color: #3a3a3a; }
+
+window.sticky-note.scheme-dark .palette-swatch.swatch-yellow,
 window.sticky-board.scheme-dark .swatch-yellow { background-color: #4a3f16; }
-window.sticky-note.scheme-dark button.dot-green,
+window.sticky-note.scheme-dark .palette-swatch.swatch-green,
 window.sticky-board.scheme-dark .swatch-green { background-color: #1e3d24; }
-window.sticky-note.scheme-dark button.dot-pink,
+window.sticky-note.scheme-dark .palette-swatch.swatch-pink,
 window.sticky-board.scheme-dark .swatch-pink { background-color: #4c2436; }
-window.sticky-note.scheme-dark button.dot-purple,
+window.sticky-note.scheme-dark .palette-swatch.swatch-purple,
 window.sticky-board.scheme-dark .swatch-purple { background-color: #34264c; }
-window.sticky-note.scheme-dark button.dot-blue,
+window.sticky-note.scheme-dark .palette-swatch.swatch-blue,
 window.sticky-board.scheme-dark .swatch-blue { background-color: #173448; }
-window.sticky-note.scheme-dark button.dot-gray,
+window.sticky-note.scheme-dark .palette-swatch.swatch-gray,
 window.sticky-board.scheme-dark .swatch-gray { background-color: #2c3134; }
-window.sticky-note.scheme-dark button.dot-charcoal,
+window.sticky-note.scheme-dark .palette-swatch.swatch-charcoal,
 window.sticky-board.scheme-dark .swatch-charcoal { background-color: #161616; }
+
+window.sticky-note.scheme-dark .palette-swatch {
+  border-color: rgba(255, 255, 255, 0.72);
+}
 
 .note-swatch {
   min-width: 8px;
